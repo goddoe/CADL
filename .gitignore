@@ -1,4 +1,12 @@
 __pycache__
 .cache
 .pyc
-
+envCADL/
+img_align_celeba
+*.jpg
+*.JPEG
+*.JPG
+*.jpeg
+*.png
+*.PNG
+.ipynb_checkpoints

@@ -9,4 +9,5 @@ img_align_celeba
 *.jpeg
 *.png
 *.PNG
+*.zip
 .ipynb_checkpoints

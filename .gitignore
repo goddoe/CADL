@@ -11,3 +11,5 @@ img_align_celeba
 *.PNG
 *.zip
 .ipynb_checkpoints
+*.ckpt.*
+*.tfmodel

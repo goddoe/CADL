@@ -487,7 +487,7 @@ def weight_variable(shape, **kwargs):
         Size of weight variable
     '''
     if isinstance(shape, list):
-        initial = tf.random_normal(tf.pack(shape), mean=0.0, stddev=0.01)
+        initial = tf.random_normal(tf.stack(shape), mean=0.0, stddev=0.01)
         initial.set_shape(shape)
     else:
         initial = tf.random_normal(shape, mean=0.0, stddev=0.01)
@@ -504,7 +504,7 @@ def bias_variable(shape, **kwargs):
         Size of weight variable
     '''
     if isinstance(shape, list):
-        initial = tf.random_normal(tf.pack(shape), mean=0.0, stddev=0.01)
+        initial = tf.random_normal(tf.stack(shape), mean=0.0, stddev=0.01)
         initial.set_shape(shape)
     else:
         initial = tf.random_normal(shape, mean=0.0, stddev=0.01)
@@ -626,7 +626,7 @@ def deconv2d(x, n_output_h, n_output_w, n_output_ch, n_input_ch=None,
             name='conv_t',
             value=x,
             filter=W,
-            output_shape=tf.pack(
+            output_shape=tf.stack(
                 [tf.shape(x)[0], n_output_h, n_output_w, n_output_ch]),
             strides=[1, d_h, d_w, 1],
             padding=padding)

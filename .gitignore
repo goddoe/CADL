@@ -18,4 +18,5 @@ img_align_celeba
 *.wav
 *.ckpt*.*
 *.pb
+*.gif
 checkpoint

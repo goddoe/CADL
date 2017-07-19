@@ -6,12 +6,14 @@ Parag K. Mital
 
 Copyright Parag K. Mital, June 2016.
 """
+from __future__ import print_function
 import matplotlib.pyplot as plt
 import tensorflow as tf
 import urllib
 import numpy as np
 import zipfile
 import os
+from scipy.misc import imsave
 
 
 def imcrop_tosquare(img):
@@ -60,10 +62,17 @@ def montage(images, saveto='montage.png'):
         m = np.ones(
             (images.shape[1] * n_plots + n_plots + 1,
              images.shape[2] * n_plots + n_plots + 1, 3)) * 0.5
-    else:
+    elif len(images.shape) == 4 and images.shape[3] == 1:
+        m = np.ones(
+            (images.shape[1] * n_plots + n_plots + 1,
+             images.shape[2] * n_plots + n_plots + 1, 1)) * 0.5
+    elif len(images.shape) == 3:
         m = np.ones(
             (images.shape[1] * n_plots + n_plots + 1,
              images.shape[2] * n_plots + n_plots + 1)) * 0.5
+    else:
+        raise ValueError('Could not parse image shape of {}'.format(
+            images.shape))
     for i in range(n_plots):
         for j in range(n_plots):
             this_filter = i * n_plots + j
@@ -71,7 +80,7 @@ def montage(images, saveto='montage.png'):
                 this_img = images[this_filter]
                 m[1 + i + i * img_h:1 + i + (i + 1) * img_h,
                   1 + j + j * img_w:1 + j + (j + 1) * img_w] = this_img
-    plt.imsave(arr=m, fname=saveto)
+    imsave(arr=np.squeeze(m), name=saveto)
     return m
 
 
@@ -95,7 +104,7 @@ def get_celeb_files():
 
         # create a string using the current loop counter
         f = '000%03d.jpg' % img_i
-        
+
         if os.path.exists('img_align_celeba/'+f):
             continue
 
@@ -145,7 +154,7 @@ def gauss(mean, stddev, ksize):
     g = tf.Graph()
     with tf.Session(graph=g):
         x = tf.linspace(-3.0, 3.0, ksize)
-        z = (tf.exp(tf.neg(tf.pow(x - mean, 2.0) /
+        z = (tf.exp(tf.negative(tf.pow(x - mean, 2.0) /
                            (2.0 * tf.pow(stddev, 2.0)))) *
              (1.0 / (stddev * tf.sqrt(2.0 * 3.1415))))
         return z.eval()
@@ -219,7 +228,7 @@ def gabor(ksize=32):
         ys = tf.sin(tf.linspace(-3.0, 3.0, ksize))
         ys = tf.reshape(ys, [ksize, 1])
         wave = tf.matmul(ys, ones)
-        gabor = tf.mul(wave, z_2d)
+        gabor = tf.multiply(wave, z_2d)
         return gabor.eval()
 
 

@@ -131,7 +131,7 @@ def decoder(z, shapes, n_hidden=None,
         if convolutional:
             current_input = tf.reshape(
                 current_input,
-                tf.pack([tf.shape(current_input)[0], dims[1], dims[2], dims[3]]))
+                tf.stack([tf.shape(current_input)[0], dims[1], dims[2], dims[3]]))
 
     Ws = []
     hs = []
@@ -180,10 +180,10 @@ def variational_bayes(h, n_code):
     z_log_sigma = 0.5 * tf.nn.tanh(linear(h, n_code, name='log_sigma')[0])
 
     # Sample from noise distribution p(eps) ~ N(0, 1)
-    epsilon = tf.random_normal(tf.pack([tf.shape(h)[0], n_code]))
+    epsilon = tf.random_normal(tf.stack([tf.shape(h)[0], n_code]))
 
     # Sample from posterior
-    z = tf.add(z_mu, tf.mul(epsilon, tf.exp(z_log_sigma)), name='z')
+    z = tf.add(z_mu, tf.multiply(epsilon, tf.exp(z_log_sigma)), name='z')
     # -log(p(z)/q(z|x)), bits by coding.
     # variational bound coding costs kl(p(z|x)||q(z|x))
     # d_kl(q(z|x)||p(z))
@@ -551,7 +551,7 @@ def train_vaegan(files,
     test_xs = sess.run(batch) / 255.0
     montage(test_xs, 'test_xs.png')
     try:
-        while not coord.should_stop() or epoch_i < n_epochs:
+        while not coord.should_stop() and epoch_i < n_epochs:
             if batch_i % (n_files // batch_size) == 0:
                 batch_i = 0
                 epoch_i += 1
@@ -636,7 +636,8 @@ def train_vaegan(files,
     sess.close()
 
 
-def test_celeb(n_epochs=100):
+def test_celeb(n_epochs=100, crop_shape=[100, 100, 3],
+               n_filters=[100, 100, 100, 100], filter_sizes=[3, 3, 3, 3]):
     """Summary
 
     Returns
@@ -647,17 +648,17 @@ def test_celeb(n_epochs=100):
     files = CELEB()
     train_vaegan(
         files=files,
-        batch_size=64,
+        batch_size=100,
         n_epochs=n_epochs,
-        crop_shape=[100, 100, 3],
+        crop_shape=crop_shape,
         crop_factor=0.8,
         input_shape=[218, 178, 3],
         convolutional=True,
         variational=True,
-        n_filters=[100, 100, 100, 100],
+        n_filters=n_filters,
         n_hidden=None,
         n_code=64,
-        filter_sizes=[3, 3, 3, 3],
+        filter_sizes=filter_sizes,
         activation=tf.nn.elu,
         ckpt_name='./celeb.ckpt')
 

@@ -94,11 +94,11 @@ def VAE(input_shape=[None, 784],
     keep_prob = tf.placeholder(tf.float32, name='keep_prob')
     corrupt_prob = tf.placeholder(tf.float32, [1])
 
-    if denoising:
-        current_input = utils.corrupt(x) * corrupt_prob + x * (1 - corrupt_prob)
+    # apply noise if denoising
+    x_ = (utils.corrupt(x) * corrupt_prob + x * (1 - corrupt_prob)) if denoising else x
 
     # 2d -> 4d if convolution
-    x_tensor = utils.to_tensor(x) if convolutional else x
+    x_tensor = utils.to_tensor(x_) if convolutional else x_
     current_input = x_tensor
 
     Ws = []
@@ -160,6 +160,7 @@ def VAE(input_shape=[None, 784],
             current_input = activation(batch_norm(h, phase_train, 'fc_t2/bn'))
             if dropout:
                 current_input = tf.nn.dropout(current_input, keep_prob)
+
             if convolutional:
                 current_input = tf.reshape(
                     current_input, tf.stack([
